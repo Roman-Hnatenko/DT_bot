@@ -87,7 +87,7 @@ def generate_keyboard(i):
 def ranking(i, msg):
     chat_id = msg.chat.id
     message_id = msg.message_id,
-    bot.edit_message_text(chat_id=chat_id, message_id=message_id, text= 'Вибери щось одне:', reply_markup=generate_keyboard(i))
+    bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=generate_keyboard(i))
 
 
 @bot.message_handler(content_types=['text'])
