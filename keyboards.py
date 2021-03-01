@@ -1,14 +1,8 @@
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-from itertools import combinations
 
 
-def generator():
-    for i in combinations(list_of_choices, 2):
-        yield i
-
-
-def binary_keyboard():
-    first_choice, second_choice = next(generator())
+def binary_keyboard(gen):
+    first_choice, second_choice = next(gen)
     print(first_choice, second_choice)
     btn_1 = InlineKeyboardButton(first_choice, callback_data=first_choice)
     btn_2 = InlineKeyboardButton(second_choice, callback_data=second_choice)

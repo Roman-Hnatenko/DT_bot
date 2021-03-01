@@ -1,14 +1,21 @@
 import telebot
 from message_text import *
 from token_ import token_
+from itertools import combinations
 import keyboards
 
 bot = telebot.TeleBot(token_, parse_mode=None)
 
 start_ranking = False
 list_of_choices = list()
-msg_id = ''
-chat_id = ''
+msg_id = None
+chat_id = None
+gen = None
+
+
+def generator():
+    for i in combinations(list_of_choices, 2):
+        yield i
 
 
 def get_all_choices():
@@ -39,7 +46,7 @@ def get_choice(message, counter, msg, keyboard):
         # if choice not in list_of_choices:
         list_of_choices.append(choice)
 
-        bot.edit_message_text(chat_id=msg.chat.id, message_id=msg.message_id, text=get_all_choices(list_of_choices), reply_markup=key_b)
+        bot.edit_message_text(chat_id=msg.chat.id, message_id=msg.message_id, text=get_all_choices(), reply_markup=key_b)
 
         if not start_ranking:
             bot.register_next_step_handler(message, get_choice, counter, msg, keyboard)
@@ -56,32 +63,36 @@ def callback_query(call):
     global msg_id
     global chat_id
     global start_ranking
-
+    global gen
     if call.data == '1000':
         bot.clear_step_handler_by_chat_id(call.message.chat.id)
         msg = bot.send_message(call.message.chat.id, 'Розпочнемо ранжування!')
-
+        gen = generator()
         chat_id = msg.chat.id
         msg_id = msg.message_id
 
         bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id)
         start_ranking = True
-        ranking()
+        ranking(gen)
 
     else:
         if call.data in list_of_choices:
+
             bot.send_message(call.message.chat.id, f'Ви натиснули на {call.data}')
-            print('aaaaaaaaaaaaaaaaaaa')
-            ranking()
+            ranking(gen)
 
 
-def ranking():
-    bot.edit_message_reply_markup(chat_id=chat_id, message_id=msg_id, reply_markup=keyboards.binary_keyboard())
+def ranking(gen):
+    try:
+        bot.edit_message_reply_markup(chat_id=chat_id, message_id=msg_id, reply_markup=keyboards.binary_keyboard(gen))
+    except StopIteration:
+        print('stopit')
 
 
 @bot.message_handler(content_types=['text'])
 def send_help_message(message):
     bot.send_message(message.chat.id, 'Розпочни вводити альтернативи командою /start👈')
+
 
 bot.polling()
 
