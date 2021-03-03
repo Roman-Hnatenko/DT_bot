@@ -1,8 +1,11 @@
 import telebot
+import random
+from itertools import combinations
+import matplotlib.pyplot as plt
+
+import keyboards
 from message_text import *
 from token_ import token_
-from itertools import combinations
-import keyboards
 
 bot = telebot.TeleBot(token_, parse_mode=None)
 
@@ -14,8 +17,16 @@ gen = None
 
 
 def generator():
-    for i in combinations(list_of_choices, 2):
-        yield i
+    tmp = [i for i in combinations(list_of_choices, 2)]
+    random.shuffle(tmp)
+    flag = True
+    for i in tmp:
+        if flag:
+            yield i
+        else:
+            j = (i[1], i[0])
+            yield j
+        flag = not flag
 
 
 def get_all_choices():
@@ -84,9 +95,14 @@ def callback_query(call):
 
 def ranking(gen):
     try:
-        bot.edit_message_reply_markup(chat_id=chat_id, message_id=msg_id, reply_markup=keyboards.binary_keyboard(gen))
+        bot.edit_message_reply_markup(chat_id, msg_id, reply_markup=keyboards.binary_keyboard(gen))
     except StopIteration:
-        print('stopit')
+        bot.edit_message_reply_markup(chat_id, msg_id)
+
+
+
+
+def generate_simple_results():
 
 
 @bot.message_handler(content_types=['text'])
