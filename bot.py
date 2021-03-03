@@ -100,11 +100,6 @@ def ranking(gen):
         bot.edit_message_reply_markup(chat_id, msg_id)
 
 
-
-
-def generate_simple_results():
-
-
 @bot.message_handler(content_types=['text'])
 def send_help_message(message):
     bot.send_message(message.chat.id, 'Розпочни вводити альтернативи командою /start👈')
