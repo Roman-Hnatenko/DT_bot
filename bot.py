@@ -48,9 +48,13 @@ def send_results(chat_id):
     results = 'РЕЗУЛЬТАТ:\n'
     list_d = list(dict_values.items())
     list_d.sort(key=lambda x: x[1], reverse=True)
+    max_word = len(max(list_d, key=lambda x: len(x[0]))[0]) + 2
     for i in list_d:
-        l = f'{i[0]} - {i[1]}\n'
+        count_space = max_word - len(i[0]) + 2
+
+        l = f'{i[1]} - {i[0]}\n'
         results += l
+
     bot.send_message(chat_id, results, reply_markup=generate_after_rez_keyboard())
 
 
